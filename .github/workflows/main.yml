@@ -1,4 +1,4 @@
-name: Build Tachistoscop Pro 2.0 APK
+name: Build Tachistoscop Pro 2.0 Professional APK
 
 on:
   workflow_dispatch:
@@ -44,11 +44,13 @@ jobs:
           test -f "extracted/Tachistoscop/settings.gradle.kts"
           test -f "extracted/Tachistoscop/app/build.gradle.kts"
           test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/MainActivity.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/ResponseScorer.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/AdaptiveController.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/HistoryActivity.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlannerActivity.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/ExerciseLibrary.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/TrainingPlanStore.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/MasteryGate.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/TachistoscopeView.java"
 
-          echo "Tachistoscop Pro 2.0 project extracted successfully."
+          echo "Tachistoscop Pro 2.0 Professional Intensive extracted successfully."
 
       - name: Build debug APK
         working-directory: ./extracted/Tachistoscop
@@ -64,7 +66,7 @@ jobs:
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
-          name: Tachistoscop-Pro-2.0-APK
+          name: Tachistoscop-Pro-2.0-Professional-Intensive-APK
           path: |
             extracted/Tachistoscop/app/build/outputs/apk/debug/app-debug.apk
             extracted/Tachistoscop/app/build/outputs/apk/debug/app-debug.apk.sha256
