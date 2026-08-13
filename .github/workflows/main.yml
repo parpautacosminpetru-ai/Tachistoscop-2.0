@@ -1,4 +1,4 @@
-name: Build Tachistoscop Pro 2.0 Professional APK
+name: Build Tachistoscop Pro 2.1 Final APK
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get kit
+      - name: Get repository
         uses: actions/checkout@v6
 
       - name: Set up Java 17
@@ -31,26 +31,29 @@ jobs:
           if [ ! -x "$SDKMANAGER" ]; then
             SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           fi
-
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.0.0"
 
-      - name: Extract project
+      - name: Extract Tachistoscop Pro 2.1
         run: |
           rm -rf extracted
           mkdir -p extracted
-          unzip -q "Tachistoscop_Android_Project_v2.0.zip" -d extracted
+          unzip -q "Tachistoscop_Android_Project_v2.1.zip" -d extracted
 
           test -f "extracted/Tachistoscop/settings.gradle.kts"
           test -f "extracted/Tachistoscop/app/build.gradle.kts"
           test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/MainActivity.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlannerActivity.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/ExerciseLibrary.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/TrainingPlanStore.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlacementTestActivity.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlacementEngine.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlacementProfileStore.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/SemanticItemRepository.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/BookTextLayoutEngine.java"
           test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/MasteryGate.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/TachistoscopeView.java"
+          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlannerActivity.java"
 
-          echo "Tachistoscop Pro 2.0 Professional Intensive extracted successfully."
+          grep -q 'versionName = "2.1.0"' extracted/Tachistoscop/app/build.gradle.kts
+          grep -q 'versionCode = 30' extracted/Tachistoscop/app/build.gradle.kts
+          echo "Tachistoscop Pro 2.1 final extracted and validated."
 
       - name: Build debug APK
         working-directory: ./extracted/Tachistoscop
@@ -66,7 +69,7 @@ jobs:
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
-          name: Tachistoscop-Pro-2.0-Professional-Intensive-APK
+          name: Tachistoscop-Pro-2.1-Final-APK
           path: |
             extracted/Tachistoscop/app/build/outputs/apk/debug/app-debug.apk
             extracted/Tachistoscop/app/build/outputs/apk/debug/app-debug.apk.sha256
