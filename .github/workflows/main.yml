@@ -1,7 +1,11 @@
-name: Build Tachistoscop Pro 2.1 Final APK
+name: Build Tachistoscop 3.0 Alpha APK
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "Tachistoscop/**"
+      - ".github/workflows/main.yml"
 
 permissions:
   contents: read
@@ -34,43 +38,33 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.0.0"
 
-      - name: Extract Tachistoscop Pro 2.1
+      - name: Validate source tree
         run: |
-          rm -rf extracted
-          mkdir -p extracted
-          unzip -q "Tachistoscop_Android_Project_v2.1.zip" -d extracted
-
-          test -f "extracted/Tachistoscop/settings.gradle.kts"
-          test -f "extracted/Tachistoscop/app/build.gradle.kts"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/MainActivity.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlacementTestActivity.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlacementEngine.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlacementProfileStore.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/SemanticItemRepository.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/BookTextLayoutEngine.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/MasteryGate.java"
-          test -f "extracted/Tachistoscop/app/src/main/java/ro/tachistoscop/app/PlannerActivity.java"
-
-          grep -q 'versionName = "2.1.0"' extracted/Tachistoscop/app/build.gradle.kts
-          grep -q 'versionCode = 30' extracted/Tachistoscop/app/build.gradle.kts
-          echo "Tachistoscop Pro 2.1 final extracted and validated."
+          test -f "Tachistoscop/settings.gradle.kts"
+          test -f "Tachistoscop/app/build.gradle.kts"
+          test -f "Tachistoscop/app/src/main/java/ro/tachistoscop/app/MainActivity.java"
+          test -f "Tachistoscop/app/src/main/java/ro/tachistoscop/app/StimulusGenerator.java"
+          test -f "Tachistoscop/app/src/main/java/ro/tachistoscop/app/RecallScorer.java"
+          test -f "Tachistoscop/app/src/main/java/ro/tachistoscop/app/FrameExposureController.java"
+          grep -q 'versionName = "3.0.0-alpha1"' Tachistoscop/app/build.gradle.kts
+          echo "Tachistoscop 3.0 alpha source validated."
 
       - name: Build debug APK
-        working-directory: ./extracted/Tachistoscop
+        working-directory: ./Tachistoscop
         run: |
           gradle --version
           gradle --no-daemon :app:assembleDebug
 
       - name: Compute APK checksum
         run: |
-          sha256sum extracted/Tachistoscop/app/build/outputs/apk/debug/app-debug.apk \
-            > extracted/Tachistoscop/app/build/outputs/apk/debug/app-debug.apk.sha256
+          sha256sum Tachistoscop/app/build/outputs/apk/debug/app-debug.apk \
+            > Tachistoscop/app/build/outputs/apk/debug/app-debug.apk.sha256
 
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
-          name: Tachistoscop-Pro-2.1-Final-APK
+          name: Tachistoscop-3.0-Alpha-APK
           path: |
-            extracted/Tachistoscop/app/build/outputs/apk/debug/app-debug.apk
-            extracted/Tachistoscop/app/build/outputs/apk/debug/app-debug.apk.sha256
+            Tachistoscop/app/build/outputs/apk/debug/app-debug.apk
+            Tachistoscop/app/build/outputs/apk/debug/app-debug.apk.sha256
           if-no-files-found: error
