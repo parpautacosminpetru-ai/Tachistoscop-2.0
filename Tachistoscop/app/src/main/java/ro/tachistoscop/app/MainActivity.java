@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
     private final int[] retentionValues = {0, 250, 500, 1000, 2000, 4000, 8000};
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final StimulusGenerator stimulusGenerator = new StimulusGenerator();
+    private final FrameExposureController exposureController = new FrameExposureController();
 
     private Spinner quantitySpinner;
     private Spinner exposureSpinner;
@@ -192,6 +193,7 @@ public class MainActivity extends Activity {
 
     private void startTrial() {
         handler.removeCallbacksAndMessages(null);
+        exposureController.cancel();
         currentStimulus = stimulusGenerator.generate(quantitySpinner.getSelectedItemPosition());
         waitingForAnswer = false;
         answerInput.setText("");
@@ -215,7 +217,7 @@ public class MainActivity extends Activity {
 
         trainingText.setText(currentStimulus);
         int exposureMs = exposureValues[exposureSpinner.getSelectedItemPosition()];
-        handler.postDelayed(this::showMask, exposureMs);
+        exposureController.start(exposureMs, this::showMask);
     }
 
     private void showMask() {
@@ -369,6 +371,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         handler.removeCallbacksAndMessages(null);
+        exposureController.cancel();
         super.onDestroy();
     }
 }
